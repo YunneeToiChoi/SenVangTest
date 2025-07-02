@@ -1,0 +1,425 @@
+{
+	"info": {
+		"_postman_id": "order-management-api",
+		"name": "Order Management API",
+		"description": "Complete API collection for Order Management System\n\n🏗️ **Tech Stack:** ASP.NET Core 8, EF Core, Redis, SQL Server\n📋 **Features:** CRUD for Customers, Read for Products, Order Management\n🔧 **Architecture:** Clean Architecture with DDD\n\n**Base URLs:**\n- HTTP: http://localhost:5246/api\n- HTTPS: https://localhost:7181/api\n- Swagger: http://localhost:5246/swagger",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "👥 Customer Management",
+			"description": "Full CRUD operations for customers with unique phone validation",
+			"item": [
+				{
+					"name": "Get All Customers",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/customers",
+							"host": ["{{baseUrl}}"],
+							"path": ["customers"]
+						},
+						"description": "📋 Lấy danh sách tất cả khách hàng\n\n✅ **Features:**\n- Redis caching (10 minutes TTL)\n- Returns all customer records\n- No pagination (suitable for small datasets)\n\n**Response Example:**\n```json\n[\n  {\n    \"customerId\": 1,\n    \"fullName\": \"Nguyễn Văn A\",\n    \"address\": \"123 Đường ABC, TP.HCM\",\n    \"phoneNumber\": \"0901234567\"\n  }\n]\n```"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Customer by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/customers/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["customers", "1"]
+						},
+						"description": "🔍 Lấy thông tin chi tiết khách hàng theo ID\n\n**Path Parameters:**\n- `id` (integer): Customer ID\n\n**Responses:**\n- `200`: Customer found\n- `404`: Customer not found"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Customer",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"fullName\": \"Trần Thị B\",\n  \"address\": \"456 Đường XYZ, Hà Nội\",\n  \"phoneNumber\": \"0987654321\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/customers",
+							"host": ["{{baseUrl}}"],
+							"path": ["customers"]
+						},
+						"description": "➕ Tạo khách hàng mới\n\n**Validation Rules:**\n- `fullName`: Required, max 100 characters\n- `address`: Required, max 200 characters  \n- `phoneNumber`: Required, max 15 characters, valid phone format, **UNIQUE**\n\n**Responses:**\n- `201`: Customer created successfully\n- `400`: Validation error or duplicate phone number\n\n**Example Error (Duplicate Phone):**\n```json\n{\n  \"error\": \"Phone number already exists\"\n}\n```"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Customer",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"fullName\": \"Nguyễn Văn A Updated\",\n  \"address\": \"789 Đường DEF, TP.HCM\",\n  \"phoneNumber\": \"0901111111\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/customers/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["customers", "1"]
+						},
+						"description": "✏️ Cập nhật thông tin khách hàng\n\n**Path Parameters:**\n- `id` (integer): Customer ID to update\n\n**Body:** Same validation as Create Customer\n\n**Responses:**\n- `200`: Updated successfully\n- `400`: Validation error\n- `404`: Customer not found"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Customer",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/customers/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["customers", "1"]
+						},
+						"description": "🗑️ Xóa khách hàng\n\n**Path Parameters:**\n- `id` (integer): Customer ID to delete\n\n**Responses:**\n- `204`: Deleted successfully (No Content)\n- `404`: Customer not found\n\n⚠️ **Note:** Deleting a customer may affect existing orders"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "📦 Product Management",
+			"description": "Read-only operations for products (pre-seeded data)",
+			"item": [
+				{
+					"name": "Get All Products",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/products",
+							"host": ["{{baseUrl}}"],
+							"path": ["products"]
+						},
+						"description": "📦 Lấy danh sách tất cả sản phẩm\n\n✅ **Features:**\n- Redis caching (15 minutes TTL)\n- Pre-seeded data from database\n- Read-only (no CRUD operations)\n\n**Sample Response:**\n```json\n[\n  {\n    \"productId\": 1,\n    \"name\": \"Laptop Dell\",\n    \"price\": 15000000\n  },\n  {\n    \"productId\": 2,\n    \"name\": \"Mouse Logitech\",\n    \"price\": 500000\n  }\n]\n```"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Product by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/products/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["products", "1"]
+						},
+						"description": "🔍 Lấy thông tin chi tiết sản phẩm theo ID\n\n**Path Parameters:**\n- `id` (integer): Product ID\n\n**Responses:**\n- `200`: Product found\n- `404`: Product not found\n\n**Available Product IDs:** 1, 2, 3, 4 (from seed data)"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "📋 Order Management",
+			"description": "Complete order management with filtering and business logic",
+			"item": [
+				{
+					"name": "Get All Orders",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/orders",
+							"host": ["{{baseUrl}}"],
+							"path": ["orders"]
+						},
+						"description": "📋 Lấy danh sách tất cả đơn hàng\n\n✅ **Features:**\n- Redis caching (5 minutes TTL)\n- Includes customer name and order items\n- Support filtering (see other requests)\n\n**Response includes:**\n- Order basic info\n- Customer name (joined)\n- OrderItems with product names\n- Calculated totals"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Orders by Customer",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/orders?customerId=1",
+							"host": ["{{baseUrl}}"],
+							"path": ["orders"],
+							"query": [
+								{
+									"key": "customerId",
+									"value": "1",
+									"description": "Filter orders by customer ID"
+								}
+							]
+						},
+						"description": "🔍 Lấy đơn hàng theo khách hàng\n\n**Query Parameters:**\n- `customerId` (integer): ID của khách hàng\n\n**Use Cases:**\n- Xem lịch sử mua hàng của khách hàng\n- Customer support lookup\n- Sales analysis per customer"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Orders by Date Range",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/orders?fromDate=2024-12-01&toDate=2024-12-31",
+							"host": ["{{baseUrl}}"],
+							"path": ["orders"],
+							"query": [
+								{
+									"key": "fromDate",
+									"value": "2024-12-01",
+									"description": "Start date (YYYY-MM-DD format)"
+								},
+								{
+									"key": "toDate",
+									"value": "2024-12-31",
+									"description": "End date (YYYY-MM-DD format)"
+								}
+							]
+						},
+						"description": "📅 Lấy đơn hàng theo khoảng thời gian\n\n**Query Parameters:**\n- `fromDate` (string): Ngày bắt đầu (YYYY-MM-DD)\n- `toDate` (string): Ngày kết thúc (YYYY-MM-DD)\n\n**Use Cases:**\n- Monthly/quarterly reports\n- Date range analysis\n- Performance tracking"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Orders - Combined Filter",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/orders?customerId=1&fromDate=2024-12-01&toDate=2024-12-31",
+							"host": ["{{baseUrl}}"],
+							"path": ["orders"],
+							"query": [
+								{
+									"key": "customerId",
+									"value": "1"
+								},
+								{
+									"key": "fromDate",
+									"value": "2024-12-01"
+								},
+								{
+									"key": "toDate",
+									"value": "2024-12-31"
+								}
+							]
+						},
+						"description": "🔍 Lấy đơn hàng với filter kết hợp\n\n**Combines multiple filters:**\n- Customer ID + Date Range\n- Useful for detailed customer analysis\n- Advanced reporting scenarios"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Order by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/orders/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["orders", "1"]
+						},
+						"description": "🔍 Lấy chi tiết đơn hàng theo ID\n\n**Path Parameters:**\n- `id` (integer): Order ID\n\n**Response includes:**\n- Full order details\n- Customer information\n- All order items with product names\n- Calculated totals\n\n**Sample Response:**\n```json\n{\n  \"orderId\": 1,\n  \"customerId\": 1,\n  \"customerName\": \"Nguyễn Văn A\",\n  \"orderDate\": \"2024-12-01T10:30:00\",\n  \"totalAmount\": 31000000,\n  \"orderItems\": [\n    {\n      \"orderItemId\": 1,\n      \"productId\": 1,\n      \"productName\": \"Laptop Dell\",\n      \"quantity\": 2,\n      \"unitPrice\": 15000000,\n      \"totalPrice\": 30000000\n    }\n  ]\n}\n```"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Order",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"customerId\": 1,\n  \"orderItems\": [\n    {\n      \"productId\": 1,\n      \"quantity\": 2\n    },\n    {\n      \"productId\": 3,\n      \"quantity\": 1\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/orders",
+							"host": ["{{baseUrl}}"],
+							"path": ["orders"]
+						},
+						"description": "➕ Tạo đơn hàng mới\n\n**✅ Business Logic Auto-Processing:**\n- **Auto-calculate TotalAmount** = sum(quantity × unitPrice)\n- **Auto-set OrderDate** = DateTime.Now\n- **Validate Customer exists**\n- **Validate all Products exist**\n- **Get current product prices** (not from request)\n\n**Request Body Validation:**\n- `customerId`: Required, must exist in database\n- `orderItems`: Required, minimum 1 item\n- `productId`: Required for each item, must exist\n- `quantity`: Required, minimum 1\n\n**Responses:**\n- `201`: Order created successfully\n- `400`: Validation error (customer/product not found, invalid data)\n\n**Example Success Response:**\n```json\n{\n  \"orderId\": 5,\n  \"customerId\": 1,\n  \"customerName\": \"Nguyễn Văn A\",\n  \"orderDate\": \"2024-12-02T14:30:00\",\n  \"totalAmount\": 31200000,\n  \"orderItems\": [...]\n}\n```"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "🔧 System Health",
+			"description": "API health checks and system status",
+			"item": [
+				{
+					"name": "API Health Check",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/customers",
+							"host": ["{{baseUrl}}"],
+							"path": ["customers"]
+						},
+						"description": "🔍 Quick API health check\n\n**Purpose:** Verify API is running and database is accessible\n\n**Expected:** Returns customer list (indicates DB + Redis working)\n\n**Troubleshooting:**\n- If fails: Check Docker containers\n- If empty array: Database not seeded\n- If Redis error: Check Redis container"
+					},
+					"response": []
+				},
+				{
+					"name": "Swagger Documentation",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "text/html"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5246/swagger",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5246",
+							"path": [
+								"swagger"
+							]
+						},
+						"description": "📋 Open Swagger UI Documentation\n\n**URL:** http://localhost:5246/swagger\n\n**Features:**\n- Interactive API testing\n- Request/response examples\n- Schema documentation\n- Try-it-out functionality\n\n**Note:** This opens in browser, not in Postman"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Auto-set timestamp for requests",
+					"pm.globals.set('timestamp', new Date().toISOString());"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript", 
+				"exec": [
+					"// Auto-test for successful responses",
+					"pm.test('Status code is successful', function () {",
+					"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 204]);",
+					"});",
+					"",
+					"// Auto-test for JSON responses (when applicable)",
+					"if (pm.response.headers.get('Content-Type') && pm.response.headers.get('Content-Type').includes('application/json')) {",
+					"    pm.test('Response is valid JSON', function () {",
+					"        pm.response.to.be.json;",
+					"    });",
+					"}"
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:5246/api",
+			"description": "Base URL for Order Management API (HTTP)"
+		},
+		{
+			"key": "baseUrlHttps", 
+			"value": "https://localhost:7181/api",
+			"description": "Base URL for Order Management API (HTTPS)"
+		}
+	]
+} 

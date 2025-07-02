@@ -1,0 +1,192 @@
+{
+	"info": {
+		"name": "Order Management API",
+		"description": "🛒 Complete API collection for Order Management System\n\n🏗️ **Tech Stack:** ASP.NET Core 8, EF Core, Redis, SQL Server\n📋 **Features:** CRUD for Customers, Read for Products, Order Management\n🔧 **Architecture:** Clean Architecture with DDD\n\n**URLs:**\n- HTTP: http://localhost:5246/api\n- HTTPS: https://localhost:7181/api\n- Swagger: http://localhost:5246/swagger",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "👥 Customer Management",
+			"item": [
+				{
+					"name": "Get All Customers",
+					"request": {
+						"method": "GET",
+						"header": [{"key": "Accept", "value": "application/json"}],
+						"url": "{{baseUrl}}/customers",
+						"description": "📋 Lấy danh sách tất cả khách hàng\n\n✅ Redis caching (10 minutes TTL)\n✅ Returns all customer records"
+					}
+				},
+				{
+					"name": "Get Customer by ID",
+					"request": {
+						"method": "GET",
+						"header": [{"key": "Accept", "value": "application/json"}],
+						"url": "{{baseUrl}}/customers/1",
+						"description": "🔍 Lấy thông tin khách hàng theo ID\n\n**Responses:**\n- 200: Customer found\n- 404: Customer not found"
+					}
+				},
+				{
+					"name": "Create Customer",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"},
+							{"key": "Accept", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"fullName\": \"Trần Thị B\",\n  \"address\": \"456 Đường XYZ, Hà Nội\",\n  \"phoneNumber\": \"0987654321\"\n}"
+						},
+						"url": "{{baseUrl}}/customers",
+						"description": "➕ Tạo khách hàng mới\n\n**Validation:**\n- fullName: Required, max 100 chars\n- address: Required, max 200 chars\n- phoneNumber: Required, max 15 chars, valid phone format, UNIQUE"
+					}
+				},
+				{
+					"name": "Update Customer",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"},
+							{"key": "Accept", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"fullName\": \"Nguyễn Văn A Updated\",\n  \"address\": \"789 Đường DEF, TP.HCM\",\n  \"phoneNumber\": \"0901111111\"\n}"
+						},
+						"url": "{{baseUrl}}/customers/1",
+						"description": "✏️ Cập nhật thông tin khách hàng"
+					}
+				},
+				{
+					"name": "Delete Customer",
+					"request": {
+						"method": "DELETE",
+						"header": [{"key": "Accept", "value": "application/json"}],
+						"url": "{{baseUrl}}/customers/1",
+						"description": "🗑️ Xóa khách hàng\n\n**Response:** 204 No Content"
+					}
+				}
+			]
+		},
+		{
+			"name": "📦 Product Management",
+			"item": [
+				{
+					"name": "Get All Products",
+					"request": {
+						"method": "GET",
+						"header": [{"key": "Accept", "value": "application/json"}],
+						"url": "{{baseUrl}}/products",
+						"description": "📦 Lấy danh sách tất cả sản phẩm\n\n✅ Redis caching (15 minutes TTL)\n✅ Pre-seeded data"
+					}
+				},
+				{
+					"name": "Get Product by ID",
+					"request": {
+						"method": "GET",
+						"header": [{"key": "Accept", "value": "application/json"}],
+						"url": "{{baseUrl}}/products/1",
+						"description": "🔍 Lấy thông tin sản phẩm theo ID\n\n**Available IDs:** 1, 2, 3, 4"
+					}
+				}
+			]
+		},
+		{
+			"name": "📋 Order Management",
+			"item": [
+				{
+					"name": "Get All Orders",
+					"request": {
+						"method": "GET",
+						"header": [{"key": "Accept", "value": "application/json"}],
+						"url": "{{baseUrl}}/orders",
+						"description": "📋 Lấy danh sách tất cả đơn hàng\n\n✅ Redis caching (5 minutes TTL)\n✅ Includes customer & product names"
+					}
+				},
+				{
+					"name": "Get Orders by Customer",
+					"request": {
+						"method": "GET",
+						"header": [{"key": "Accept", "value": "application/json"}],
+						"url": "{{baseUrl}}/orders?customerId=1",
+						"description": "🔍 Filter orders by customer ID"
+					}
+				},
+				{
+					"name": "Get Orders by Date Range",
+					"request": {
+						"method": "GET",
+						"header": [{"key": "Accept", "value": "application/json"}],
+						"url": "{{baseUrl}}/orders?fromDate=2024-12-01&toDate=2024-12-31",
+						"description": "📅 Filter orders by date range (YYYY-MM-DD)"
+					}
+				},
+				{
+					"name": "Get Orders - Combined Filter",
+					"request": {
+						"method": "GET",
+						"header": [{"key": "Accept", "value": "application/json"}],
+						"url": "{{baseUrl}}/orders?customerId=1&fromDate=2024-12-01&toDate=2024-12-31",
+						"description": "🔍 Combine customer ID + date range filters"
+					}
+				},
+				{
+					"name": "Get Order by ID",
+					"request": {
+						"method": "GET",
+						"header": [{"key": "Accept", "value": "application/json"}],
+						"url": "{{baseUrl}}/orders/1",
+						"description": "🔍 Get full order details with items"
+					}
+				},
+				{
+					"name": "Create Order",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"},
+							{"key": "Accept", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"customerId\": 1,\n  \"orderItems\": [\n    {\n      \"productId\": 1,\n      \"quantity\": 2\n    },\n    {\n      \"productId\": 3,\n      \"quantity\": 1\n    }\n  ]\n}"
+						},
+						"url": "{{baseUrl}}/orders",
+						"description": "➕ Tạo đơn hàng mới\n\n**Auto-processing:**\n- ✅ Auto-calculate TotalAmount\n- ✅ Auto-set OrderDate\n- ✅ Validate Customer & Products exist\n- ✅ Get current product prices\n\n**Validation:**\n- customerId: Required, must exist\n- orderItems: Required, min 1 item\n- productId: Required, must exist\n- quantity: Required, min 1"
+					}
+				}
+			]
+		},
+		{
+			"name": "🔧 System Health",
+			"item": [
+				{
+					"name": "API Health Check",
+					"request": {
+						"method": "GET",
+						"header": [{"key": "Accept", "value": "application/json"}],
+						"url": "{{baseUrl}}/customers",
+						"description": "🔍 Quick health check - should return customer list"
+					}
+				},
+				{
+					"name": "Swagger Documentation",
+					"request": {
+						"method": "GET",
+						"header": [{"key": "Accept", "value": "text/html"}],
+						"url": "http://localhost:5246/swagger",
+						"description": "📋 Open Swagger UI in browser"
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:5246/api",
+			"description": "Base URL for Order Management API"
+		}
+	]
+} 
