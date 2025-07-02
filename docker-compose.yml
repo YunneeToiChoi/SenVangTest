@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver_ordermanagement
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=TestSenVang@Password
+      - MSSQL_PID=Express
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis_ordermanagement
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+volumes:
+  sqlserver_data:
+  redis_data: 
